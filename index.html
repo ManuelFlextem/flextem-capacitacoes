@@ -357,22 +357,26 @@ function loadSessions() {
       <p>Carregando sessões...</p>
     </div>`;
 
-  fetch(APPS_SCRIPT_URL + '?action=getSessions')
-    .then(r => r.json())
-    .then(function(data) {
-      SESSIONS = data || [];
-      renderStats();
-      renderFilters();
-      renderGrid();
-    })
-    .catch(function(err) {
-      document.getElementById('sessions-grid').innerHTML = `
-        <div class="error-state">
-          <p>❌ Erro ao carregar sessões. Tente novamente.</p>
-          <button class="btn-retry" onclick="loadSessions()">Tentar novamente</button>
-        </div>`;
-      console.error('Erro getSessions:', err);
-    });
+  // CORS workaround: inject script tag to load data from Apps Script
+  window._sessionsCallback = function(data) {
+    SESSIONS = data || [];
+    renderStats();
+    renderFilters();
+    renderGrid();
+    delete window._sessionsCallback;
+  };
+  window._sessionsError = function() {
+    document.getElementById('sessions-grid').innerHTML = `
+      <div class="error-state">
+        <p>❌ Erro ao carregar sessões. Tente novamente.</p>
+        <button class="btn-retry" onclick="loadSessions()">Tentar novamente</button>
+      </div>`;
+    delete window._sessionsError;
+  };
+  const script = document.createElement('script');
+  script.src = APPS_SCRIPT_URL + '?action=getSessions&callback=_sessionsCallback';
+  script.onerror = window._sessionsError;
+  document.head.appendChild(script);
 }
 
 // ============================================================
@@ -680,33 +684,33 @@ function submitForm() {
     prescriptor:      document.getElementById('f-prescriptor').value,
   };
 
-  fetch(APPS_SCRIPT_URL + '?action=registerDoctor', {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(formData)
-  })
-    .then(r => r.json())
-    .then(function(result) {
-      if (result && result.success) {
-        registrations[sessionId] = true;
-        const idx = SESSIONS.findIndex(s => String(s.id) === String(sessionId));
-        if (idx !== -1) {
-          SESSIONS[idx].cuposOcupados = (parseInt(SESSIONS[idx].cuposOcupados) || 0) + 1;
-        }
-        showSuccessState(s);
-        renderGrid();
-      } else {
-        alert('Erro ao registrar. Tente novamente.');
-        btn.disabled = false;
-        btn.textContent = 'Confirmar inscrição';
+  // CORS workaround: use script tag injection for registerDoctor
+  const cbName = '_regCallback_' + Date.now();
+  window[cbName] = function(result) {
+    delete window[cbName];
+    if (result && result.success) {
+      registrations[sessionId] = true;
+      const idx = SESSIONS.findIndex(s => String(s.id) === String(sessionId));
+      if (idx !== -1) {
+        SESSIONS[idx].cuposOcupados = (parseInt(SESSIONS[idx].cuposOcupados) || 0) + 1;
       }
-    })
-    .catch(function(err) {
-      alert('Erro de conexão. Tente novamente.');
+      showSuccessState(s);
+      renderGrid();
+    } else {
+      alert('Erro ao registrar. Tente novamente.');
       btn.disabled = false;
       btn.textContent = 'Confirmar inscrição';
-      console.error(err);
-    });
+    }
+  };
+  const regScript = document.createElement('script');
+  regScript.src = APPS_SCRIPT_URL + '?action=registerDoctor&callback=' + cbName + '&data=' + encodeURIComponent(JSON.stringify(formData));
+  regScript.onerror = function() {
+    alert('Erro de conexão. Tente novamente.');
+    btn.disabled = false;
+    btn.textContent = 'Confirmar inscrição';
+    delete window[cbName];
+  };
+  document.head.appendChild(regScript);
 }
 
 function showSuccessState(s) {
@@ -850,4 +854,4 @@ window.onload = loadSessions;
         })();
       </script>
     <div class="footer-bottom">
-      <p>© 2026 Flextem Biopharma. 
+      <p>© 2026 Flextem Biopharma.
