@@ -357,26 +357,47 @@ function loadSessions() {
       <p>Carregando sessões...</p>
     </div>`;
 
-  // CORS workaround: inject script tag to load data from Apps Script
-  window._sessionsCallback = function(data) {
+  fetch(APPS_SCRIPT_URL + '?action=getSessions', {
+    redirect: 'follow',
+    mode: 'cors'
+  })
+  .then(r => r.text())
+  .then(function(text) {
+    // Apps Script may return JSONP or JSON
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(e) {
+      // strip JSONP wrapper if present
+      const match = text.match(/^[^(]+\((.+)\)$/s);
+      if (match) data = JSON.parse(match[1]);
+    }
     SESSIONS = data || [];
     renderStats();
     renderFilters();
     renderGrid();
-    delete window._sessionsCallback;
-  };
-  window._sessionsError = function() {
-    document.getElementById('sessions-grid').innerHTML = `
-      <div class="error-state">
-        <p>❌ Erro ao carregar sessões. Tente novamente.</p>
-        <button class="btn-retry" onclick="loadSessions()">Tentar novamente</button>
-      </div>`;
-    delete window._sessionsError;
-  };
-  const script = document.createElement('script');
-  script.src = APPS_SCRIPT_URL + '?action=getSessions&callback=_sessionsCallback';
-  script.onerror = window._sessionsError;
-  document.head.appendChild(script);
+  })
+  .catch(function(err) {
+    // Fallback: try JSONP via script tag
+    window._sessionsCallback = function(data) {
+      SESSIONS = data || [];
+      renderStats();
+      renderFilters();
+      renderGrid();
+      delete window._sessionsCallback;
+    };
+    const script = document.createElement('script');
+    script.src = APPS_SCRIPT_URL + '?action=getSessions&callback=_sessionsCallback';
+    script.onerror = function() {
+      document.getElementById('sessions-grid').innerHTML = `
+        <div class="error-state">
+          <p>❌ Erro ao carregar sessões. Tente novamente.</p>
+          <button class="btn-retry" onclick="loadSessions()">Tentar novamente</button>
+        </div>`;
+    };
+    document.head.appendChild(script);
+    console.error('fetch failed, trying JSONP:', err);
+  });
 }
 
 // ============================================================
@@ -684,8 +705,7 @@ function submitForm() {
     prescriptor:      document.getElementById('f-prescriptor').value,
   };
 
-  // CORS workaround: use script tag injection for registerDoctor
-  const cbName = '_regCallback_' + Date.now();
+  const cbName = '_reg_' + Date.now();
   window[cbName] = function(result) {
     delete window[cbName];
     if (result && result.success) {
