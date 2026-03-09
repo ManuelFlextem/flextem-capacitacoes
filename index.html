@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23291E33'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Arial' font-weight='700' fill='%2328B478'>F</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Flextem — Treinamentos Médicos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden; box-sizing: border-box; }
+  :root {
+    --green: #28B478;
+    --green-light: #3ecf8e;
+    --green-pale: #e6faf2;
+    --purple: #6B4C8A;
+    --purple-dark: #291E33;
+    --purple-mid: #4a3562;
+    --purple-pale: #f0ebf7;
+    --cream: #f8f9fb;
+    --dark: #291E33;
+    --text: #1a1225;
+    --muted: #7a6e8a;
+    --border: #e2d9ee;
+    --white: #ffffff;
+    --red: #e53e3e;
+    --shadow: 0 4px 32px rgba(107,76,138,0.10);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--purple-dark); color: var(--text); min-height: 100%; display: flex; flex-direction: column; margin: 0; padding: 0; }
+  main { flex: 1; }
+
+  /* HEADER */
+  header { background: var(--purple-dark); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 24px rgba(0,0,0,0.18); }
+  .header-inner { max-width: 1100px; margin: 0 auto; padding: 14px clamp(16px, 4vw, 32px); display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark { width: 38px; height: 38px; background: var(--green); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .logo-mark svg { width: 22px; height: 22px; }
+  .logo-text { font-family: 'Syne', sans-serif; font-size: 1.35rem; font-weight: 700; color: var(--white); }
+  .logo-text span { color: var(--gold); }
+  .header-badge { background: rgba(40,180,120,0.15); border: 1px solid rgba(40,180,120,0.4); color: var(--green); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-mid) 60%, #1a3a28 100%); padding: clamp(36px, 8vw, 64px) clamp(16px, 5vw, 32px) clamp(36px, 8vw, 56px); text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .hero-tag { display: inline-block; background: rgba(40,180,120,0.2); border: 1px solid rgba(40,180,120,0.45); color: var(--green); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 16px; border-radius: 20px; margin-bottom: 22px; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: var(--white); line-height: 1.18; margin-bottom: 16px; position: relative; }
+  .hero p { color: rgba(255,255,255,0.72); font-size: 1rem; max-width: 520px; margin: 0 auto 36px; line-height: 1.65; position: relative; }
+  .hero-stats { display: flex; justify-content: center; gap: 36px; flex-wrap: wrap; position: relative; }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'DM Sans', sans-serif; font-size: 1.9rem; font-weight: 700; color: var(--green); display: block; }
+  .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+  /* MAIN */
+  main { max-width: 1100px; margin: 0 auto; padding: 48px 24px 80px; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: clamp(1.1rem, 4vw, 1.45rem); font-weight: 600; color: var(--dark); }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn { padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--white); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .filter-btn.active, .filter-btn:hover { background: var(--green); border-color: var(--green); color: var(--white); }
+
+  /* CARDS */
+  .sessions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 24px; }
+  .session-card { background: var(--white); border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.22s, box-shadow 0.22s; display: flex; flex-direction: column; }
+  .session-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(107,76,138,0.18); }
+  .card-top { padding: 22px 22px 0; display: flex; align-items: flex-start; gap: 14px; }
+  .specialty-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+  .card-meta { flex: 1; }
+  .specialty-tag { display: inline-block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 10px; margin-bottom: 6px; }
+  .session-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--dark); line-height: 1.3; }
+  .card-body { padding: 16px 22px; flex: 1; }
+  .info-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; font-size: 0.84rem; color: var(--muted); }
+  .info-row strong { color: var(--text); font-weight: 500; }
+  .cupos-bar { margin: 14px 0 0; }
+  .cupos-label { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
+  .bar-bg { height: 5px; background: var(--green-pale); border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; background: var(--green-light); transition: width 0.5s ease; }
+  .bar-fill.warning { background: #e67e22; }
+  .bar-fill.danger { background: var(--red); }
+  .card-footer { padding: 16px 22px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; }
+  .btn-register { flex: 1; padding: 11px 18px; background: var(--green); color: var(--white); border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .btn-register:hover { background: var(--green-light); }
+  .btn-register:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+  .btn-qr { width: 40px; height: 40px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+  .btn-qr:hover { border-color: var(--green); background: var(--green-pale); }
+  .sold-out-badge { text-align: center; font-size: 0.82rem; font-weight: 600; color: var(--red); padding: 8px; background: #fdf0ef; border-radius: 8px; width: 100%; }
+
+  /* LOADING */
+  .loading-state { text-align: center; padding: 80px 20px; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-state p { color: var(--muted); font-size: 0.95rem; }
+  .error-state { text-align: center; padding: 60px 20px; }
+  .error-state p { color: var(--red); font-size: 0.9rem; margin-bottom: 12px; }
+  .btn-retry { padding: 9px 20px; background: var(--green); color: var(--white); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.25); animation: slideUp 0.28s ease; }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-header { padding: 26px 26px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .modal-header-info { flex: 1; }
+  .modal-pretitle { font-size: 0.73rem; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 1.18rem; font-weight: 600; color: var(--dark); line-height: 1.25; }
+  .modal-close { width: 32px; height: 32px; border: none; background: var(--cream); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--muted); flex-shrink: 0; transition: all 0.15s; }
+  .modal-close:hover { background: var(--border); color: var(--dark); }
+  .modal-body { padding: 22px 26px 26px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .form-label span { color: var(--red); }
+  .form-input, .form-select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--text); background: var(--white); transition: border-color 0.2s; outline: none; }
+  .form-input:focus, .form-select:focus { border-color: var(--green); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn-submit { width: 100%; padding: 13px; background: var(--green); color: var(--white); border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-submit:hover { background: var(--green-light); }
+  .btn-submit:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+  .success-state { text-align: center; padding: 16px 0 8px; }
+  .success-icon { width: 64px; height: 64px; background: var(--green-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.8rem; }
+  .success-state h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; color: var(--dark); margin-bottom: 8px; }
+  .success-state p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+  .meet-link-box { background: var(--green-pale); border: 1.5px solid rgba(40,180,120,0.3); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; text-decoration: none; transition: all 0.2s; margin-bottom: 12px; }
+  .meet-link-box:hover { background: #d4eddf; border-color: var(--green); }
+  .meet-link-icon { width: 38px; height: 38px; background: var(--green); border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .meet-link-text { flex: 1; text-align: left; }
+  .meet-link-text strong { display: block; font-size: 0.85rem; color: var(--dark); font-weight: 600; }
+  .meet-link-text span { font-size: 0.78rem; color: var(--muted); }
+
+  /* QR MODAL */
+  .qr-modal-body { padding: 28px 26px; text-align: center; }
+  .qr-modal-body h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: var(--dark); margin-bottom: 4px; }
+  .qr-modal-body p { font-size: 0.82rem; color: var(--muted); margin-bottom: 22px; }
+  #qr-container { display: flex; justify-content: center; margin-bottom: 20px; }
+  #qr-container canvas, #qr-container img { border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+  .btn-download { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: var(--dark); color: var(--white); border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s; text-decoration: none; }
+  .btn-download:hover { background: var(--green); }
+
+  @media (max-width: 640px) {
+    .form-row { grid-template-columns: 1fr; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .filter-row { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+    .filter-btn { white-space: nowrap; flex-shrink: 0; }
+    .modal { border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; max-width: 100%; max-height: 92vh; margin: 0; }
+    .modal-overlay { align-items: flex-end; padding: 0; }
+    .card-footer { flex-wrap: wrap; }
+    .btn-register { min-width: 0; }
+    .footer-contacts { justify-content: flex-start; }
+    .footer-logo-wrap { justify-content: flex-start; align-items: flex-start; }
+    .footer-section-title { text-align: left; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .hero-stats { gap: clamp(12px, 4vw, 24px); }
+    .stat-num { font-size: clamp(1.2rem, 5vw, 1.9rem); }
+  }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--purple-dark);
+    color: rgba(255,255,255,0.85);
+    padding: clamp(32px, 6vw, 48px) clamp(16px, 4vw, 32px) 28px;
+  }
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+    gap: 40px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 24px;
+  }
+  .footer-logo-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .footer-logo-wrap p {
+    font-size: 0.83rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+  .footer-section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+  .footer-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .footer-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.86rem;
+    transition: color 0.2s;
+  }
+  .footer-contact-item:hover { color: var(--green); }
+  .footer-contact-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .footer-contact-icon.wpp { background: rgba(37,211,102,0.15); }
+  .footer-contact-icon.mail { background: rgba(40,180,120,0.15); }
+  .footer-contact-name {
+    display: block;
+    font-size: 0.76rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 1px;
+  }
+  .footer-website {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 0.86rem;
+    margin-bottom: 12px;
+    transition: color 0.2s;
+  }
+  .footer-website:hover { color: var(--green); }
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .footer-bottom p {
+    font-size: 0.76rem;
+    color: rgba(255,255,255,0.35);
+  }
+
+  /* PAGINATION */
+  .pagination-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 36px; }
+  .page-btn { width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); color: var(--text); font-size: 0.88rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
+  .page-btn:hover { border-color: var(--green); color: var(--green); }
+  .page-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
+  .page-btn:disabled { opacity: 0.35; cursor: default; }
+  .page-arrow { width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); color: var(--muted); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
+  .page-arrow:hover:not(:disabled) { border-color: var(--green); color: var(--green); }
+  .page-arrow:disabled { opacity: 0.3; cursor: default; }
+  .pagination-info { font-size: 0.78rem; color: var(--muted); margin: 0 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <svg width="160" height="40" viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
+  <text x="0" y="28" font-family="Arial, sans-serif" font-weight="600" font-size="26" letter-spacing="1" fill="#28B478">FLEX</text>
+  <text x="70" y="28" font-family="Arial, sans-serif" font-weight="600" font-size="26" letter-spacing="1" fill="#28B478">TEM</text>
+  <text x="1" y="40" font-family="Arial, sans-serif" font-weight="400" font-size="10" letter-spacing="4" fill="#9d88b8">BIOPHARMA</text>
+</svg>
+    </div>
+    <span class="header-badge">Capacitações Médicas</span>
+  </div>
+</header>
+
+<div class="hero">
+
+  <h1>Formação Contínua<br>para Profissionais de Saúde</h1>
+  <p>Capacitações virtuais sobre terapia endocanabinoide para profissionais de saúde. Registre-se na sessão que melhor se adapta à sua agenda.</p>
+  <div class="hero-stats" id="hero-stats">
+    <div class="stat"><span class="stat-num">—</span><span class="stat-label">Sessões</span></div>
+    <div class="stat"><span class="stat-num">—</span><span class="stat-label">Com vagas</span></div>
+    <div class="stat"><span class="stat-num">—</span><span class="stat-label">Especialidades</span></div>
+  </div>
+</div>
+
+<main>
+  <div class="section-header">
+    <h2 class="section-title">Próximas sessões</h2>
+    <div class="filter-row" id="filter-row">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">Todas</button>
+    </div>
+  </div>
+  <div class="sessions-grid" id="sessions-grid">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Carregando sessões...</p>
+    </div>
+  </div>
+  <div class="pagination-wrap" id="pagination-wrap"></div>
+</main>
+
+<!-- REGISTER MODAL -->
+<div class="modal-overlay" id="register-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-pretitle">Inscrição</div>
+        <div class="modal-title" id="modal-session-title">—</div>
+      </div>
+      <button class="modal-close" onclick="closeRegisterModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-pretitle">Código QR</div>
+        <div class="modal-title" id="qr-session-title">—</div>
+      </div>
+      <button class="modal-close" onclick="closeQrModal()">✕</button>
+    </div>
+    <div class="qr-modal-body">
+      <p>Escaneie para acessar o formulário de inscrição</p>
+      <div id="qr-container"></div>
+      <button class="btn-download" onclick="downloadQR()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Baixar QR
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURAÇÃO — URL do Apps Script backend
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwr0zv5sa8O4Dwsa82eXVAopQmvLV2zGbaJI-lzPEH8sFkFO7EYiURqargYJL0renM/exec';
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let SESSIONS = [];
+let activeFilter = 'all';
+let currentPage = 1;
+const PAGE_SIZE = 6;
+const registrations = {}; // sessionId -> true (registrado en esta sesión)
+
+// ============================================================
+// CARGA INICIAL — lee desde Google Sheets via Apps Script
+// ============================================================
+function loadSessions() {
+  document.getElementById('sessions-grid').innerHTML = `
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Carregando sessões...</p>
+    </div>`;
+
+  fetch(APPS_SCRIPT_URL + '?action=getSessions')
+    .then(r => r.json())
+    .then(function(data) {
+      SESSIONS = data || [];
+      renderStats();
+      renderFilters();
+      renderGrid();
+    })
+    .catch(function(err) {
+      document.getElementById('sessions-grid').innerHTML = `
+        <div class="error-state">
+          <p>❌ Erro ao carregar sessões. Tente novamente.</p>
+          <button class="btn-retry" onclick="loadSessions()">Tentar novamente</button>
+        </div>`;
+      console.error('Erro getSessions:', err);
+    });
+}
+
+// ============================================================
+// RENDERIZADO
+// ============================================================
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    // Aceita DD/MM/YYYY ou YYYY-MM-DD
+    let d;
+    const str = dateStr.toString().trim();
+    if (str.includes('/')) {
+      const [dd, mm, yyyy] = str.split('/');
+      d = new Date(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd), 12, 0, 0);
+    } else {
+      d = new Date(str + 'T12:00:00');
+    }
+    return d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  } catch(e) { return dateStr; }
+}
+
+function getCuposStatus(ocupados, total) {
+  ocupados = parseInt(ocupados) || 0;
+  total    = parseInt(total)    || 0;
+  if (total === 0) return { label: 'Sem limite', color: 'ok', pct: 0 };
+  const pct = ocupados / total;
+  if (pct >= 1)   return { label: 'Sem vagas', color: 'danger', pct: 100 };
+  if (pct >= 0.8) return { label: `Últimas ${total - ocupados} vagas`, color: 'warning', pct: Math.round(pct * 100) };
+  return { label: `${total - ocupados} vagas disponíveis`, color: 'ok', pct: Math.round(pct * 100) };
+}
+
+function renderStats() {
+  const total        = SESSIONS.length;
+  const disponibles  = SESSIONS.filter(s => (parseInt(s.cuposOcupados)||0) < (parseInt(s.cuposTotal)||99)).length;
+  const especialidades = [...new Set(SESSIONS.map(s => s.specialty).filter(Boolean))].length;
+  document.getElementById('hero-stats').innerHTML = `
+    <div class="stat"><span class="stat-num">${total}</span><span class="stat-label">Sessões</span></div>
+    <div class="stat"><span class="stat-num">${disponibles}</span><span class="stat-label">Com vagas</span></div>
+    <div class="stat"><span class="stat-num">${especialidades}</span><span class="stat-label">Especialidades</span></div>`;
+}
+
+function renderFilters() {
+  const specialties = [...new Set(SESSIONS.map(s => s.specialty).filter(Boolean))];
+  const row = document.getElementById('filter-row');
+  // Limpiar filtros anteriores excepto "Todas"
+  row.querySelectorAll('[data-filter]:not([data-filter="all"])').forEach(b => b.remove());
+  specialties.forEach(sp => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.dataset.filter = sp;
+    btn.textContent = sp;
+    btn.onclick = () => setFilter(sp, btn);
+    row.appendChild(btn);
+  });
+}
+
+function setFilter(filter, btn) {
+  activeFilter = filter;
+  currentPage = 1;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function parseDate(dateStr) {
+  if (!dateStr) return new Date(9999,0,1);
+  const str = dateStr.toString().trim();
+  if (str.includes('/')) {
+    const [dd, mm, yyyy] = str.split('/');
+    return new Date(parseInt(yyyy), parseInt(mm)-1, parseInt(dd));
+  }
+  return new Date(str);
+}
+
+function renderGrid() {
+  const grid = document.getElementById('sessions-grid');
+  const paginationWrap = document.getElementById('pagination-wrap');
+
+  // Filter + sort by date ascending
+  const filtered = (activeFilter === 'all' ? SESSIONS : SESSIONS.filter(s => s.specialty === activeFilter))
+    .slice()
+    .sort((a, b) => parseDate(a.date) - parseDate(b.date));
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state"><p>Nenhuma sessão disponível para este filtro.</p></div>';
+    paginationWrap.innerHTML = '';
+    return;
+  }
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const paginated = filtered.slice(start, start + PAGE_SIZE);
+
+  grid.innerHTML = paginated.map(s => {
+    const cupos   = getCuposStatus(s.cuposOcupados, s.cuposTotal);
+    const soldOut = cupos.pct >= 100 && parseInt(s.cuposTotal) > 0;
+    const reg     = registrations[s.id];
+    const bgColor = s.colorBg   || '#e8f5ef';
+    const txtColor = s.colorText || '#1a6b4a';
+    const emoji   = s.emoji     || '📋';
+
+    return `
+      <div class="session-card">
+        <div class="card-top">
+          <div class="specialty-icon" style="background:${bgColor}">${emoji}</div>
+          <div class="card-meta">
+            <span class="specialty-tag" style="background:${bgColor};color:${txtColor}">${s.specialty || ''}</span>
+            <div class="session-title">${s.title || 'Sem título'}</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <strong>${formatDate(s.date)}</strong>
+          </div>
+          <div class="info-row">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            ${s.time || '—'} hs · ${s.duration || '90 min'}
+          </div>
+          <div class="info-row">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            ${s.expositor || '—'}
+          </div>
+          ${parseInt(s.cuposTotal) > 0 ? `
+          <div class="cupos-bar">
+            <div class="cupos-label">
+              <span>Vagas</span>
+              <span style="color:${cupos.color === 'danger' ? '#c0392b' : cupos.color === 'warning' ? '#e67e22' : '#1a6b4a'}">${cupos.label}</span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill ${cupos.color !== 'ok' ? cupos.color : ''}" style="width:${cupos.pct}%"></div></div>
+          </div>` : ''}
+        </div>
+        <div class="card-footer">
+          ${soldOut
+            ? `<div class="sold-out-badge">❌ Sessão completa — sem vagas</div>`
+            : reg
+              ? `<a class="btn-register" href="${s.meetLink || '#'}" target="_blank" style="background:var(--green-light);text-decoration:none;">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg>
+                  Entrar no Meet
+                </a>`
+              : `<button class="btn-register" onclick="openRegisterModal('${s.id}')">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                  Inscrever-me
+                </button>`
+          }
+          ${s.meetLink ? `
+          <button class="btn-qr" onclick="openQrModal('${s.id}')" title="Ver QR">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+              <path d="M14 14h.01M14 17h3v3M17 14h3"/>
+            </svg>
+          </button>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Render pagination
+  if (totalPages <= 1) { paginationWrap.innerHTML = ''; return; }
+
+  let pHtml = `<button class="page-arrow" onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}>&#8592;</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    pHtml += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+  pHtml += `<button class="page-arrow" onclick="goToPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>&#8594;</button>`;
+  pHtml += `<span class="pagination-info">${start+1}–${Math.min(start+PAGE_SIZE, filtered.length)} de ${filtered.length}</span>`;
+  paginationWrap.innerHTML = pHtml;
+}
+
+function goToPage(p) {
+  const filtered = (activeFilter === 'all' ? SESSIONS : SESSIONS.filter(s => s.specialty === activeFilter));
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  currentPage = Math.max(1, Math.min(p, totalPages));
+  renderGrid();
+  document.getElementById('sessions-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============================================================
+// MODAL DE REGISTRO
+// ============================================================
+function openRegisterModal(sessionId) {
+  const s = SESSIONS.find(s => String(s.id) === String(sessionId));
+  if (!s) return;
+
+  document.getElementById('modal-session-title').textContent = s.title;
+  document.getElementById('modal-body').innerHTML = buildFormHTML();
+  document.getElementById('register-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Guardar sesión activa en el form
+  document.getElementById('register-modal').dataset.sessionId = sessionId;
+}
+
+function buildFormHTML() {
+  return `
+    <div id="form-wrap">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nome <span>*</span></label>
+          <input class="form-input" id="f-nome" required placeholder="Ex: Maria">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sobrenome <span>*</span></label>
+          <input class="form-input" id="f-sobrenome" required placeholder="Ex: Silva">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">CRM <span>*</span></label>
+        <input class="form-input" id="f-crm" required placeholder="Número de registro profissional">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Especialidade <span>*</span></label>
+          <select class="form-select" id="f-especialidade" required>
+            <option value="">Selecionar...</option>
+            <option>Clínica Médica</option><option>Neurologia</option>
+            <option>Oncologia</option><option>Psiquiatria</option>
+            <option>Reumatologia</option><option>Dor / Cuidados Paliativos</option>
+            <option>Pediatria</option><option>Geriatria</option>
+            <option>Medicina de Família</option><option>Outra</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <select class="form-select" id="f-estado">
+            <option value="">Selecionar...</option>
+            <option>Acre</option><option>Alagoas</option><option>Amapá</option>
+            <option>Amazonas</option><option>Bahia</option><option>Ceará</option>
+            <option>Distrito Federal</option><option>Espírito Santo</option>
+            <option>Goiás</option><option>Maranhão</option><option>Mato Grosso</option>
+            <option>Mato Grosso do Sul</option><option>Minas Gerais</option>
+            <option>Pará</option><option>Paraíba</option><option>Paraná</option>
+            <option>Pernambuco</option><option>Piauí</option><option>Rio de Janeiro</option>
+            <option>Rio Grande do Norte</option><option>Rio Grande do Sul</option>
+            <option>Rondônia</option><option>Roraima</option><option>Santa Catarina</option>
+            <option>São Paulo</option><option>Sergipe</option><option>Tocantins</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail <span>*</span></label>
+        <input class="form-input" id="f-email" type="email" required placeholder="seu@email.com.br">
+      </div>
+      <div class="form-group">
+        <label class="form-label">WhatsApp</label>
+        <input class="form-input" id="f-whatsapp" placeholder="+55 (11) 99999-9999">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Já prescreve terapia endocanabinoide?</label>
+        <select class="form-select" id="f-prescriptor">
+          <option value="">Selecionar...</option>
+          <option>Sim, regularmente</option>
+          <option>Sim, de forma esporádica</option>
+          <option>Não, quero aprender a prescrever</option>
+          <option>Não prescrevo e não é meu interesse atual</option>
+        </select>
+      </div>
+      <button id="btn-submit" class="btn-submit" onclick="submitForm()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92"/></svg>
+        Confirmar inscrição
+      </button>
+    </div>`;
+}
+
+function closeRegisterModal() {
+  document.getElementById('register-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function submitForm() {
+  const sessionId = document.getElementById('register-modal').dataset.sessionId;
+  const s = SESSIONS.find(s => String(s.id) === String(sessionId));
+  if (!s) return;
+
+  const nome        = document.getElementById('f-nome').value.trim();
+  const sobrenome   = document.getElementById('f-sobrenome').value.trim();
+  const crm         = document.getElementById('f-crm').value.trim();
+  const especialidade = document.getElementById('f-especialidade').value;
+  const email       = document.getElementById('f-email').value.trim();
+
+  if (!nome || !sobrenome || !crm || !especialidade || !email) {
+    alert('Por favor, complete os campos obrigatórios (*).');
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  const formData = {
+    sessionId:        s.id,
+    sessionTitle:     s.title,
+    sessionDate:      formatDate(s.date),
+    sessionTime:      s.time,
+    sessionExpositor: s.expositor,
+    meetLink:         s.meetLink || '',
+    nombre:           nome,
+    apellido:         sobrenome,
+    crm:              crm,
+    especialidad:     especialidade,
+    estado:           document.getElementById('f-estado').value,
+    email:            email,
+    whatsapp:         document.getElementById('f-whatsapp').value.trim(),
+    prescriptor:      document.getElementById('f-prescriptor').value,
+  };
+
+  fetch(APPS_SCRIPT_URL + '?action=registerDoctor', {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(formData)
+  })
+    .then(r => r.json())
+    .then(function(result) {
+      if (result && result.success) {
+        registrations[sessionId] = true;
+        const idx = SESSIONS.findIndex(s => String(s.id) === String(sessionId));
+        if (idx !== -1) {
+          SESSIONS[idx].cuposOcupados = (parseInt(SESSIONS[idx].cuposOcupados) || 0) + 1;
+        }
+        showSuccessState(s);
+        renderGrid();
+      } else {
+        alert('Erro ao registrar. Tente novamente.');
+        btn.disabled = false;
+        btn.textContent = 'Confirmar inscrição';
+      }
+    })
+    .catch(function(err) {
+      alert('Erro de conexão. Tente novamente.');
+      btn.disabled = false;
+      btn.textContent = 'Confirmar inscrição';
+      console.error(err);
+    });
+}
+
+function showSuccessState(s) {
+  document.getElementById('modal-body').innerHTML = `
+    <div class="success-state">
+      <div class="success-icon">✅</div>
+      <h3>Inscrição confirmada!</h3>
+      <p>Você se inscreveu em <strong>${s.title}</strong>.<br>
+      O evento é em <strong>${formatDate(s.date)}</strong> às <strong>${s.time} hs</strong>.<br>
+      Você receberá um e-mail de confirmação em breve.</p>
+      ${s.meetLink ? `
+      <a class="meet-link-box" href="${s.meetLink}" target="_blank">
+        <div class="meet-link-icon">
+          <svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg>
+        </div>
+        <div class="meet-link-text">
+          <strong>Entrar no Google Meet</strong>
+          <span>No dia do evento, clique aqui</span>
+        </div>
+        <svg width="16" height="16" fill="none" stroke="#1a6b4a" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>` : ''}
+      <button class="btn-submit" onclick="closeRegisterModal()" style="background:var(--dark);">
+        Voltar às sessões
+      </button>
+    </div>`;
+}
+
+// ============================================================
+// MODAL QR
+// ============================================================
+function openQrModal(sessionId) {
+  const s = SESSIONS.find(s => String(s.id) === String(sessionId));
+  if (!s || !s.meetLink) return;
+
+  document.getElementById('qr-session-title').textContent = s.title;
+  document.getElementById('qr-container').innerHTML = '';
+
+  new QRCode(document.getElementById('qr-container'), {
+    text: s.meetLink,
+    width: 200, height: 200,
+    colorDark: '#1c2520', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  document.getElementById('qr-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeQrModal() {
+  document.getElementById('qr-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function downloadQR() {
+  const canvas = document.querySelector('#qr-container canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = 'flextem-qr.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+// ============================================================
+// CERRAR MODALES AL CLICK FUERA
+// ============================================================
+document.getElementById('register-modal').addEventListener('click', function(e) { if (e.target === this) closeRegisterModal(); });
+document.getElementById('qr-modal').addEventListener('click', function(e) { if (e.target === this) closeQrModal(); });
+
+// ============================================================
+// INICIO — cargar datos desde Sheets
+// ============================================================
+window.onload = loadSessions;
+</script>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+
+      <!-- Logo + descrição -->
+      <div class="footer-logo-wrap">
+        <svg width="130" height="34" viewBox="0 0 130 34" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="24" font-family="Arial, sans-serif" font-weight="600" font-size="22" letter-spacing="1" fill="#28B478">FLEX</text>
+          <text x="57" y="24" font-family="Arial, sans-serif" font-weight="600" font-size="22" letter-spacing="1" fill="#28B478">TEM</text>
+          <text x="1" y="34" font-family="Arial, sans-serif" font-weight="400" font-size="8.5" letter-spacing="4" fill="#9d88b8">BIOPHARMA</text>
+        </svg>
+        <p>Capacitações médicas em<br>terapia endocanabinoide para<br>profissionais de saúde.</p>
+        <a href="https://www.flextem.com.br" target="_blank" class="footer-website">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+          www.flextem.com.br
+        </a>
+      </div>
+
+      <!-- WhatsApp -->
+      <div>
+        <div class="footer-section-title">WhatsApp</div>
+        <div class="footer-contacts">
+          <a href="https://wa.me/5511996024490?text=Ol%C3%A1%2C+gostaria+de+informações+sobre+as+capacitações+Flextem" target="_blank" class="footer-contact-item">
+            <div class="footer-contact-icon wpp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.857L.057 23.999l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.371l-.36-.214-3.736.98.998-3.645-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+            </div>
+            <div>
+              +55 11 99602-4490
+              <span class="footer-contact-name">Alex Cameron Perez</span>
+            </div>
+          </a>
+          <a href="https://wa.me/5553999993680?text=Ol%C3%A1%2C+gostaria+de+informações+sobre+as+capacitações+Flextem" target="_blank" class="footer-contact-item">
+            <div class="footer-contact-icon wpp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.857L.057 23.999l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.371l-.36-.214-3.736.98.998-3.645-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+            </div>
+            <div>
+              +55 53 99999-3680
+              <span class="footer-contact-name">Rodrigo Kilca</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <div class="footer-section-title">E-mail</div>
+        <div class="footer-contacts">
+          <a id="mail-link" href="#" class="footer-contact-item">
+            <div class="footer-contact-icon mail">
+              <svg width="18" height="18" fill="none" stroke="#28B478" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <span id="mail-display">suporte [at] flextem.com.br</span>
+              <span class="footer-contact-name">Contato sobre capacitações</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <script>
+        (function(){
+          var a='suporte', b='flextem.com.br';
+          var em = a+'@'+b;
+          var subj = 'Contato sobre capacitação Flextem';
+          var body = 'Olá, gostaria de obter informações sobre as capacitações médicas da Flextem.';
+          document.getElementById('mail-display').textContent = em;
+          document.getElementById('mail-link').href = 'mailto:'+em+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
+        })();
+      </script>
+    <div class="footer-bottom">
+      <p>© 2026 Flextem Biopharma. 
