@@ -359,8 +359,9 @@ function loadSessions() {
 
   fetch(APPS_SCRIPT_URL + '?action=getSessions')
     .then(r => r.json())
-    .then(function(data) {
-      SESSIONS = data || [];
+    .then(function(res) {
+      // Acepta tanto {success, data:[...]} como array directo
+      SESSIONS = (res && res.data) ? res.data : (Array.isArray(res) ? res : []);
       renderStats();
       renderFilters();
       renderGrid();
