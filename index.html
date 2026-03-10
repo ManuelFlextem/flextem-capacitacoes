@@ -272,8 +272,8 @@
 
 <div class="hero">
 
-  <h1>Formação Contínua<br>para Profissionais de Saúde</h1>
-  <p>Capacitações virtuais sobre terapia endocanabinoide para profissionais de saúde. Registre-se na sessão que melhor se adapta à sua agenda.</p>
+  <h1>Formação Contínua<br>para Médicos</h1>
+  <p>Capacitações virtuais sobre terapia endocanabinoide para médicos. Registre-se na sessão que melhor se adapta à sua agenda.</p>
   <div class="hero-stats" id="hero-stats">
     <div class="stat"><span class="stat-num">—</span><span class="stat-label">Sessões</span></div>
     <div class="stat"><span class="stat-num">—</span><span class="stat-label">Com vagas</span></div>
@@ -487,11 +487,14 @@ function renderGrid() {
         <div class="card-body">
           <div class="info-row">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-            <strong>${formatDate(s.date)}</strong>
+            <div>
+              <div><strong>Aula 1:</strong> ${formatDate(s.date)} · ${s.time || '—'} hs</div>
+              ${s.date2 ? `<div><strong>Aula 2:</strong> ${formatDate(s.date2)} · ${s.time2 || '—'} hs</div>` : ''}
+            </div>
           </div>
           <div class="info-row">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            ${s.time || '—'} hs · ${s.duration || '90 min'}
+            ${s.duration || '90 min'} por aula · ${s.date2 ? 'curso completo: 2 aulas' : '1 aula'}
           </div>
           <div class="info-row">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -792,7 +795,7 @@ window.onload = loadSessions;
           <text x="57" y="24" font-family="Arial, sans-serif" font-weight="600" font-size="22" letter-spacing="1" fill="#28B478">TEM</text>
           <text x="1" y="34" font-family="Arial, sans-serif" font-weight="400" font-size="8.5" letter-spacing="4" fill="#9d88b8">BIOPHARMA</text>
         </svg>
-        <p>Capacitações médicas em<br>terapia endocanabinoide para<br>profissionais de saúde.</p>
+        <p>Capacitações médicas em<br>terapia endocanabinoide para<br>médicos.</p>
         <a href="https://www.flextem.com.br" target="_blank" class="footer-website">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
           www.flextem.com.br
@@ -851,4 +854,3 @@ window.onload = loadSessions;
       </script>
     <div class="footer-bottom">
       <p>© 2026 Flextem Biopharma.
-        
