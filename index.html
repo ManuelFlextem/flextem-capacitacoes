@@ -116,6 +116,17 @@
   .btn-submit { width: 100%; padding: 13px; background: var(--green); color: var(--white); border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-submit:hover { background: var(--green-light); }
   .btn-submit:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+  .aulas-list { width: 100%; }
+  .aula-item { border-bottom: 1px solid var(--border); }
+  .aula-item:last-child { border-bottom: none; }
+  .aula-header { display: flex; align-items: center; gap: 10px; padding: 9px 0; cursor: pointer; width: 100%; background: none; border: none; text-align: left; }
+  .aula-header:hover .aula-title { color: var(--green); }
+  .aula-num { font-size: 0.7rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; min-width: 44px; }
+  .aula-title { font-size: 0.83rem; color: var(--text); font-weight: 500; flex: 1; line-height: 1.35; }
+  .aula-chevron { font-size: 0.7rem; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .aula-chevron.open { transform: rotate(180deg); }
+  .aula-detail { display: none; padding: 0 0 9px 54px; font-size: 0.8rem; color: var(--muted); }
+  .aula-detail.open { display: block; }
   .form-check { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
   .form-check input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: var(--green); cursor: pointer; }
   .form-check label { font-size: 0.82rem; color: var(--muted); line-height: 1.5; cursor: pointer; }
@@ -510,34 +521,21 @@ function renderGrid() {
           </div>
         </div>
         <div class="card-body">
-          <div class="info-row" style="align-items:flex-start;">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-top:3px;flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-            <div style="width:100%;">
-              <div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);">
-                <strong style="font-size:0.72rem;color:var(--green);white-space:nowrap;">Aula 1</strong>
-                <span style="font-size:0.8rem;color:var(--muted);">${formatDate(s.date)} · ${s.time || '—'} hs</span>
-                ${s.titleAula1 ? `<span style="font-size:0.8rem;color:var(--text);flex:1;"> — ${s.titleAula1}</span>` : ''}
-              </div>
-              ${s.date2 ? `<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);">
-                <strong style="font-size:0.72rem;color:var(--green);white-space:nowrap;">Aula 2</strong>
-                <span style="font-size:0.8rem;color:var(--muted);">${formatDate(s.date2)} · ${s.time2 || '—'} hs</span>
-                ${s.titleAula2 ? `<span style="font-size:0.8rem;color:var(--text);flex:1;"> — ${s.titleAula2}</span>` : ''}
-              </div>` : ''}
-              ${s.date3 ? `<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);">
-                <strong style="font-size:0.72rem;color:var(--green);white-space:nowrap;">Aula 3</strong>
-                <span style="font-size:0.8rem;color:var(--muted);">${formatDate(s.date3)} · ${s.time3 || '—'} hs</span>
-                ${s.titleAula3 ? `<span style="font-size:0.8rem;color:var(--text);flex:1;"> — ${s.titleAula3}</span>` : ''}
-              </div>` : ''}
-              ${s.date4 ? `<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;">
-                <strong style="font-size:0.72rem;color:var(--green);white-space:nowrap;">Aula 4</strong>
-                <span style="font-size:0.8rem;color:var(--muted);">${formatDate(s.date4)} · ${s.time4 || '—'} hs</span>
-                ${s.titleAula4 ? `<span style="font-size:0.8rem;color:var(--text);flex:1;"> — ${s.titleAula4}</span>` : ''}
-              </div>` : ''}
-            </div>
-          </div>
-          <div class="info-row">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            ${s.duration || '120 min'} por aula · curso completo: 4 aulas
+          <div class="aulas-list">
+            ${[
+              {num:'Aula 1', title: s.titleAula1, date: s.date,  time: s.time},
+              {num:'Aula 2', title: s.titleAula2, date: s.date2, time: s.time2},
+              {num:'Aula 3', title: s.titleAula3, date: s.date3, time: s.time3},
+              {num:'Aula 4', title: s.titleAula4, date: s.date4, time: s.time4},
+            ].filter(a => a.date).map((a, i) => `
+              <div class="aula-item">
+                <button class="aula-header" onclick="toggleAula(this)">
+                  <span class="aula-num">${a.num}</span>
+                  <span class="aula-title">${a.title || '—'}</span>
+                  <span class="aula-chevron">▼</span>
+                </button>
+                <div class="aula-detail">${formatDate(a.date)} · ${a.time || '—'} hs</div>
+              </div>`).join('')}
           </div>
           <div class="info-row">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -835,6 +833,14 @@ document.getElementById('qr-modal').addEventListener('click', function(e) { if (
 // ============================================================
 // INICIO — cargar datos desde Sheets
 // ============================================================
+function toggleAula(btn) {
+  const chevron = btn.querySelector('.aula-chevron');
+  const detail  = btn.nextElementSibling;
+  const isOpen  = detail.classList.contains('open');
+  detail.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', !isOpen);
+}
+
 window.onload = loadSessions;
 </script>
 
