@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -284,9 +284,7 @@
 <main>
   <div class="section-header">
     <h2 class="section-title">Próximas sessões</h2>
-    <div class="filter-row" id="filter-row">
-      <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">Todas</button>
-    </div>
+    <div class="filter-row" id="filter-row"></div>
   </div>
   <div class="sessions-grid" id="sessions-grid">
     <div class="loading-state">
@@ -408,24 +406,40 @@ function getCuposStatus(ocupados, total) {
 function renderStats() {
   const total        = SESSIONS.length;
   const disponibles  = SESSIONS.filter(s => (parseInt(s.cuposOcupados)||0) < (parseInt(s.cuposTotal)||99)).length;
-  const especialidades = [...new Set(SESSIONS.map(s => s.specialty).filter(Boolean))].length;
+  const meses = [...new Set(SESSIONS.map(s => getMonthTag(s.date)).filter(Boolean))].length;
   document.getElementById('hero-stats').innerHTML = `
     <div class="stat"><span class="stat-num">${total}</span><span class="stat-label">Sessões</span></div>
     <div class="stat"><span class="stat-num">${disponibles}</span><span class="stat-label">Com vagas</span></div>
-    <div class="stat"><span class="stat-num">${especialidades}</span><span class="stat-label">Especialidades</span></div>`;
+    <div class="stat"><span class="stat-num">${meses}</span><span class="stat-label">Meses</span></div>`;
+}
+
+function getMonthTag(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    const str = dateStr.toString().trim();
+    let d;
+    if (str.includes('/')) {
+      const [dd, mm, yyyy] = str.split('/');
+      d = new Date(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd), 12, 0, 0);
+    } else {
+      d = new Date(str + 'T12:00:00');
+    }
+    return d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+      .replace(/^\w/, c => c.toUpperCase());
+  } catch(e) { return dateStr; }
 }
 
 function renderFilters() {
-  const specialties = [...new Set(SESSIONS.map(s => s.specialty).filter(Boolean))];
+  // Filtros por mes
+  const months = [...new Set(SESSIONS.map(s => getMonthTag(s.date)).filter(Boolean))];
   const row = document.getElementById('filter-row');
-  // Limpiar filtros anteriores excepto "Todas"
-  row.querySelectorAll('[data-filter]:not([data-filter="all"])').forEach(b => b.remove());
-  specialties.forEach(sp => {
+  row.innerHTML = '<button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">Todos</button>';
+  months.forEach(m => {
     const btn = document.createElement('button');
     btn.className = 'filter-btn';
-    btn.dataset.filter = sp;
-    btn.textContent = sp;
-    btn.onclick = () => setFilter(sp, btn);
+    btn.dataset.filter = m;
+    btn.textContent = m;
+    btn.onclick = () => setFilter(m, btn);
     row.appendChild(btn);
   });
 }
@@ -453,7 +467,7 @@ function renderGrid() {
   const paginationWrap = document.getElementById('pagination-wrap');
 
   // Filter + sort by date ascending
-  const filtered = (activeFilter === 'all' ? SESSIONS : SESSIONS.filter(s => s.specialty === activeFilter))
+  const filtered = (activeFilter === 'all' ? SESSIONS : SESSIONS.filter(s => getMonthTag(s.date) === activeFilter))
     .slice()
     .sort((a, b) => parseDate(a.date) - parseDate(b.date));
 
@@ -481,7 +495,7 @@ function renderGrid() {
         <div class="card-top">
           <div class="specialty-icon" style="background:${bgColor}">${emoji}</div>
           <div class="card-meta">
-            <span class="specialty-tag" style="background:${bgColor};color:${txtColor}">${s.specialty || ''}</span>
+            <span class="specialty-tag" style="background:${bgColor};color:${txtColor}">${getMonthTag(s.date)}</span>
             <div class="session-title">${s.title || 'Sem título'}</div>
           </div>
         </div>
@@ -548,7 +562,7 @@ function renderGrid() {
 }
 
 function goToPage(p) {
-  const filtered = (activeFilter === 'all' ? SESSIONS : SESSIONS.filter(s => s.specialty === activeFilter));
+  const filtered = (activeFilter === 'all' ? SESSIONS : SESSIONS.filter(s => getMonthTag(s.date) === activeFilter));
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   currentPage = Math.max(1, Math.min(p, totalPages));
   renderGrid();
@@ -590,8 +604,8 @@ function buildFormHTML() {
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Especialidade <span>*</span></label>
-          <select class="form-select" id="f-especialidade" required>
+          <label class="form-label">Especialidade</label>
+          <select class="form-select" id="f-especialidade">
             <option value="">Selecionar...</option>
             <option>Clínica Médica</option><option>Neurologia</option>
             <option>Oncologia</option><option>Psiquiatria</option>
@@ -658,7 +672,7 @@ function submitForm() {
   const especialidade = document.getElementById('f-especialidade').value;
   const email       = document.getElementById('f-email').value.trim();
 
-  if (!nome || !sobrenome || !crm || !especialidade || !email) {
+  if (!nome || !sobrenome || !crm || !email) {
     alert('Por favor, complete os campos obrigatórios (*).');
     return;
   }
@@ -672,6 +686,8 @@ function submitForm() {
     sessionTitle:     s.title,
     sessionDate:      formatDate(s.date),
     sessionTime:      s.time,
+    sessionDate2:     s.date2 ? formatDate(s.date2) : '',
+    sessionTime2:     s.time2 || '',
     sessionExpositor: s.expositor,
     meetLink:         s.meetLink || '',
     nombre:           nome,
