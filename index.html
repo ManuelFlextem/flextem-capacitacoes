@@ -684,11 +684,7 @@ function submitForm() {
     prescriptor:      document.getElementById('f-prescriptor').value,
   };
 
-  fetch(APPS_SCRIPT_URL + '?action=registerDoctor', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  })
+  fetch(APPS_SCRIPT_URL + '?action=registerDoctor&data=' + encodeURIComponent(JSON.stringify(formData)))
     .then(r => r.json())
     .then(function(result) {
       if (result && result.success) {
