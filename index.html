@@ -116,6 +116,7 @@
   .btn-submit { width: 100%; padding: 13px; background: var(--green); color: var(--white); border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-submit:hover { background: var(--green-light); }
   .btn-submit:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+  .kpi-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(40,180,120,0.3); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; }
   .aulas-list { width: 100%; }
   .aula-item { border-bottom: 1px solid var(--border); }
   .aula-item:last-child { border-bottom: none; }
@@ -290,9 +291,9 @@
   <h1>Formação Contínua<br>para Médicos</h1>
   <p>Capacitações virtuais sobre terapia endocanabinoide para médicos. Registre-se na sessão que melhor se adapta à sua agenda.</p>
   <div class="hero-stats" id="hero-stats">
-    <div class="stat"><span class="stat-num" id="kpi-sessoes">—</span><span class="stat-label">Cursos</span></div>
-    <div class="stat"><span class="stat-num" id="kpi-vagas">—</span><span class="stat-label">Vagas disponíveis</span></div>
-    <div class="stat"><span class="stat-num" id="kpi-medicos">—</span><span class="stat-label">Médicos inscritos</span></div>
+    <div class="stat"><span class="stat-num" id="kpi-sessoes"><span class="kpi-spinner"></span></span><span class="stat-label">Cursos</span></div>
+    <div class="stat"><span class="stat-num" id="kpi-vagas"><span class="kpi-spinner"></span></span><span class="stat-label">Vagas disponíveis</span></div>
+    <div class="stat"><span class="stat-num" id="kpi-medicos"><span class="kpi-spinner"></span></span><span class="stat-label">Médicos inscritos</span></div>
   </div>
 </div>
 
