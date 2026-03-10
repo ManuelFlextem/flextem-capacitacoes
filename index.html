@@ -116,6 +116,10 @@
   .btn-submit { width: 100%; padding: 13px; background: var(--green); color: var(--white); border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-submit:hover { background: var(--green-light); }
   .btn-submit:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+  .form-check { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+  .form-check input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: var(--green); cursor: pointer; }
+  .form-check label { font-size: 0.82rem; color: var(--muted); line-height: 1.5; cursor: pointer; }
+  .form-check label a { color: var(--green); text-decoration: none; }
   .success-state { text-align: center; padding: 16px 0 8px; }
   .success-icon { width: 64px; height: 64px; background: var(--green-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.8rem; }
   .success-state h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; color: var(--dark); margin-bottom: 8px; }
@@ -275,9 +279,9 @@
   <h1>Formação Contínua<br>para Médicos</h1>
   <p>Capacitações virtuais sobre terapia endocanabinoide para médicos. Registre-se na sessão que melhor se adapta à sua agenda.</p>
   <div class="hero-stats" id="hero-stats">
-    <div class="stat"><span class="stat-num">—</span><span class="stat-label">Sessões</span></div>
-    <div class="stat"><span class="stat-num">—</span><span class="stat-label">Com vagas</span></div>
-    <div class="stat"><span class="stat-num">—</span><span class="stat-label">Especialidades</span></div>
+    <div class="stat"><span class="stat-num" id="kpi-sessoes">—</span><span class="stat-label">Sessões</span></div>
+    <div class="stat"><span class="stat-num" id="kpi-vagas">—</span><span class="stat-label">Vagas disponíveis</span></div>
+    <div class="stat"><span class="stat-num" id="kpi-medicos">—</span><span class="stat-label">Médicos inscritos</span></div>
   </div>
 </div>
 
@@ -404,13 +408,19 @@ function getCuposStatus(ocupados, total) {
 }
 
 function renderStats() {
-  const total        = SESSIONS.length;
-  const disponibles  = SESSIONS.filter(s => (parseInt(s.cuposOcupados)||0) < (parseInt(s.cuposTotal)||99)).length;
-  const meses = [...new Set(SESSIONS.map(s => getMonthTag(s.date)).filter(Boolean))].length;
-  document.getElementById('hero-stats').innerHTML = `
-    <div class="stat"><span class="stat-num">${total}</span><span class="stat-label">Sessões</span></div>
-    <div class="stat"><span class="stat-num">${disponibles}</span><span class="stat-label">Com vagas</span></div>
-    <div class="stat"><span class="stat-num">${meses}</span><span class="stat-label">Meses</span></div>`;
+  // KPIs desde la API
+  fetch(APPS_SCRIPT_URL + '?action=getStats')
+    .then(r => r.json())
+    .then(function(res) {
+      const s = (res && res.data) ? res.data : {};
+      document.getElementById('kpi-sessoes').textContent = s.totalSesiones || SESSIONS.length;
+      document.getElementById('kpi-vagas').textContent   = s.totalVagas    !== undefined ? s.totalVagas : '—';
+      document.getElementById('kpi-medicos').textContent = s.medicosInscritos !== undefined ? s.medicosInscritos : '—';
+    })
+    .catch(function() {
+      // fallback con datos locales
+      document.getElementById('kpi-sessoes').textContent = SESSIONS.length;
+    });
 }
 
 function getMonthTag(dateStr) {
@@ -649,6 +659,10 @@ function buildFormHTML() {
           <option>Não prescrevo e não é meu interesse atual</option>
         </select>
       </div>
+      <div class="form-check">
+        <input type="checkbox" id="f-newsletter" checked>
+        <label for="f-newsletter">Gostaria de receber artigos e notícias relacionados à Flextem e à terapia com fitocanabinoides.</label>
+      </div>
       <button id="btn-submit" class="btn-submit" onclick="submitForm()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92"/></svg>
         Confirmar inscrição
@@ -698,6 +712,7 @@ function submitForm() {
     email:            email,
     whatsapp:         document.getElementById('f-whatsapp').value.trim(),
     prescriptor:      document.getElementById('f-prescriptor').value,
+    newsletter:       document.getElementById('f-newsletter').checked ? 'Sim' : 'Não',
   };
 
   fetch(APPS_SCRIPT_URL + '?action=registerDoctor&data=' + encodeURIComponent(JSON.stringify(formData)))
