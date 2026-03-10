@@ -336,7 +336,7 @@
 // ============================================================
 // CONFIGURAÇÃO — URL do Apps Script backend
 // ============================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwr0zv5sa8O4Dwsa82eXVAopQmvLV2zGbaJI-lzPEH8sFkFO7EYiURqargYJL0renM/exec';
+const APPS_SCRIPT_URL = 'https://flextem-proxy.manuel-cd3.workers.dev';
 
 // ============================================================
 // ESTADO GLOBAL
@@ -357,47 +357,22 @@ function loadSessions() {
       <p>Carregando sessões...</p>
     </div>`;
 
-  fetch(APPS_SCRIPT_URL + '?action=getSessions', {
-    redirect: 'follow',
-    mode: 'cors'
-  })
-  .then(r => r.text())
-  .then(function(text) {
-    // Apps Script may return JSONP or JSON
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch(e) {
-      // strip JSONP wrapper if present
-      const match = text.match(/^[^(]+\((.+)\)$/s);
-      if (match) data = JSON.parse(match[1]);
-    }
-    SESSIONS = data || [];
-    renderStats();
-    renderFilters();
-    renderGrid();
-  })
-  .catch(function(err) {
-    // Fallback: try JSONP via script tag
-    window._sessionsCallback = function(data) {
+  fetch(APPS_SCRIPT_URL + '?action=getSessions')
+    .then(r => r.json())
+    .then(function(data) {
       SESSIONS = data || [];
       renderStats();
       renderFilters();
       renderGrid();
-      delete window._sessionsCallback;
-    };
-    const script = document.createElement('script');
-    script.src = APPS_SCRIPT_URL + '?action=getSessions&callback=_sessionsCallback';
-    script.onerror = function() {
+    })
+    .catch(function(err) {
       document.getElementById('sessions-grid').innerHTML = `
         <div class="error-state">
           <p>❌ Erro ao carregar sessões. Tente novamente.</p>
           <button class="btn-retry" onclick="loadSessions()">Tentar novamente</button>
         </div>`;
-    };
-    document.head.appendChild(script);
-    console.error('fetch failed, trying JSONP:', err);
-  });
+      console.error('Erro getSessions:', err);
+    });
 }
 
 // ============================================================
@@ -705,32 +680,33 @@ function submitForm() {
     prescriptor:      document.getElementById('f-prescriptor').value,
   };
 
-  const cbName = '_reg_' + Date.now();
-  window[cbName] = function(result) {
-    delete window[cbName];
-    if (result && result.success) {
-      registrations[sessionId] = true;
-      const idx = SESSIONS.findIndex(s => String(s.id) === String(sessionId));
-      if (idx !== -1) {
-        SESSIONS[idx].cuposOcupados = (parseInt(SESSIONS[idx].cuposOcupados) || 0) + 1;
+  fetch(APPS_SCRIPT_URL + '?action=registerDoctor', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  })
+    .then(r => r.json())
+    .then(function(result) {
+      if (result && result.success) {
+        registrations[sessionId] = true;
+        const idx = SESSIONS.findIndex(s => String(s.id) === String(sessionId));
+        if (idx !== -1) {
+          SESSIONS[idx].cuposOcupados = (parseInt(SESSIONS[idx].cuposOcupados) || 0) + 1;
+        }
+        showSuccessState(s);
+        renderGrid();
+      } else {
+        alert('Erro ao registrar. Tente novamente.');
+        btn.disabled = false;
+        btn.textContent = 'Confirmar inscrição';
       }
-      showSuccessState(s);
-      renderGrid();
-    } else {
-      alert('Erro ao registrar. Tente novamente.');
+    })
+    .catch(function(err) {
+      alert('Erro de conexão. Tente novamente.');
       btn.disabled = false;
       btn.textContent = 'Confirmar inscrição';
-    }
-  };
-  const regScript = document.createElement('script');
-  regScript.src = APPS_SCRIPT_URL + '?action=registerDoctor&callback=' + cbName + '&data=' + encodeURIComponent(JSON.stringify(formData));
-  regScript.onerror = function() {
-    alert('Erro de conexão. Tente novamente.');
-    btn.disabled = false;
-    btn.textContent = 'Confirmar inscrição';
-    delete window[cbName];
-  };
-  document.head.appendChild(regScript);
+      console.error(err);
+    });
 }
 
 function showSuccessState(s) {
@@ -875,3 +851,4 @@ window.onload = loadSessions;
       </script>
     <div class="footer-bottom">
       <p>© 2026 Flextem Biopharma.
+        
