@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -433,7 +433,7 @@ function renderFilters() {
   // Filtros por mes
   const months = [...new Set(SESSIONS.map(s => getMonthTag(s.date)).filter(Boolean))];
   const row = document.getElementById('filter-row');
-  row.innerHTML = '<button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">Todos</button>';
+  row.innerHTML = '<button class="filter-btn active" data-filter="all" onclick="setFilter(&apos;all&apos;, this)">Todos</button>';
   months.forEach(m => {
     const btn = document.createElement('button');
     btn.className = 'filter-btn';
