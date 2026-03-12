@@ -367,10 +367,9 @@ function loadSessions() {
       <p>Carregando cursos...</p>
     </div>`;
 
-  fetch(APPS_SCRIPT_URL + '?action=getSessions')
+  return fetch(APPS_SCRIPT_URL + '?action=getSessions')
     .then(r => r.json())
     .then(function(res) {
-      // Acepta tanto {success, data:[...]} como array directo
       SESSIONS = (res && res.data) ? res.data : (Array.isArray(res) ? res : []);
       renderStats();
       renderFilters();
@@ -791,13 +790,15 @@ function showSuccessState(s) {
 // ============================================================
 function openQrModal(sessionId) {
   const s = SESSIONS.find(s => String(s.id) === String(sessionId));
-  if (!s || !s.meetLink) return;
+  if (!s) return;
+
+  const portalUrl = 'https://capacitacoes.flextem.com.br/?curso=' + encodeURIComponent(s.id);
 
   document.getElementById('qr-session-title').textContent = s.title;
   document.getElementById('qr-container').innerHTML = '';
 
   new QRCode(document.getElementById('qr-container'), {
-    text: s.meetLink,
+    text: portalUrl,
     width: 200, height: 200,
     colorDark: '#1c2520', colorLight: '#ffffff',
     correctLevel: QRCode.CorrectLevel.H
@@ -838,7 +839,25 @@ function toggleAula(btn) {
   chevron.classList.toggle('open', !isOpen);
 }
 
-window.onload = loadSessions;
+window.onload = function() {
+  loadSessions().then(() => {
+    // Si viene con ?curso=ID abrir directamente el formulario
+    const params = new URLSearchParams(window.location.search);
+    const cursoId = params.get('curso');
+    if (cursoId) {
+      // Esperar que las sesiones carguen y abrir el modal
+      const tryOpen = setInterval(() => {
+        const session = SESSIONS.find(s => String(s.id) === String(cursoId));
+        if (session) {
+          clearInterval(tryOpen);
+          openRegisterModal(cursoId);
+        }
+      }, 200);
+      // Timeout de seguridad
+      setTimeout(() => clearInterval(tryOpen), 5000);
+    }
+  });
+};
 </script>
 
 <footer class="site-footer">
