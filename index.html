@@ -507,6 +507,19 @@ function renderGrid() {
   const finalizados = all.filter(s => isFinalizado(s));
   const filtered    = showPasados ? [...activos, ...finalizados] : activos;
 
+  // Mostrar boton ver pasados aunque no haya activos
+  const pasadosBtnEarly = document.getElementById('btn-ver-pasados');
+  if (pasadosBtnEarly) {
+    if (finalizados.length > 0) {
+      pasadosBtnEarly.style.display = 'block';
+      pasadosBtnEarly.textContent = showPasados
+        ? '▲ Ocultar cursos anteriores'
+        : '▼ Ver cursos anteriores (' + finalizados.length + ')';
+    } else {
+      pasadosBtnEarly.style.display = 'none';
+    }
+  }
+
   if (!filtered.length) {
     grid.innerHTML = '<div class="empty-state"><p>Nenhum curso disponível para este filtro.</p></div>';
     paginationWrap.innerHTML = '';
