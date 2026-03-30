@@ -424,18 +424,20 @@ function getCuposStatus(ocupados, total) {
 }
 
 function renderStats() {
-  // KPIs desde la API
   fetch(APPS_SCRIPT_URL + '?action=getStats')
     .then(r => r.json())
     .then(function(res) {
       const s = (res && res.data) ? res.data : {};
-      document.getElementById('kpi-sessoes').textContent = s.totalSesiones || SESSIONS.length;
-      document.getElementById('kpi-vagas').textContent   = s.totalVagas    !== undefined ? s.totalVagas : '—';
-      document.getElementById('kpi-medicos').textContent = s.medicosInscritos !== undefined ? s.medicosInscritos : '—';
+      document.getElementById('kpi-sessoes').textContent    = s.totalSesiones     !== undefined ? s.totalSesiones    : SESSIONS.length;
+      document.getElementById('kpi-vagas').textContent      = s.totalVagas        !== undefined ? s.totalVagas       : '—';
+      document.getElementById('kpi-medicos').textContent    = s.medicosInscritos  !== undefined ? s.medicosInscritos : '—';
+      document.getElementById('kpi-finalizados').textContent = s.cursosFinalizados !== undefined ? s.cursosFinalizados : '—';
     })
     .catch(function() {
-      // fallback con datos locales
-      document.getElementById('kpi-sessoes').textContent = SESSIONS.length;
+      document.getElementById('kpi-sessoes').textContent    = SESSIONS.length;
+      document.getElementById('kpi-vagas').textContent      = '—';
+      document.getElementById('kpi-medicos').textContent    = '—';
+      document.getElementById('kpi-finalizados').textContent = '—';
     });
 }
 
