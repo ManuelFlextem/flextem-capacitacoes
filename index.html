@@ -595,7 +595,7 @@ function renderGrid() {
                     Inscrever-me
                   </button>`
           }
-          ${s.meetLink ? `
+          ${s.meetLink && !finalizado ? `
           <button class="btn-qr" onclick="openQrModal('${s.id}')" title="Ver QR">
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
