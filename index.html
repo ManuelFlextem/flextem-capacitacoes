@@ -52,7 +52,7 @@
   .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
 
   /* MAIN */
-  main { max-width: 1100px; margin: 0 auto; padding: 48px 24px 80px; }
+  main { max-width: 1100px; margin: 0 auto; padding: 48px 16px 80px; width: 100%; }
   .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
   .section-title { font-family: 'Syne', sans-serif; font-size: clamp(1.1rem, 4vw, 1.45rem); font-weight: 600; color: var(--dark); }
   .filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -60,7 +60,7 @@
   .filter-btn.active, .filter-btn:hover { background: var(--green); border-color: var(--green); color: var(--white); }
 
   /* CARDS */
-  .sessions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 24px; }
+  .sessions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 20px; width: 100%; }
   .session-card { background: var(--white); border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.22s, box-shadow 0.22s; display: flex; flex-direction: column; }
   .session-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(107,76,138,0.18); }
   .card-top { padding: 22px 22px 0; display: flex; align-items: flex-start; gap: 14px; }
@@ -159,10 +159,14 @@
   .btn-download:hover { background: var(--green); }
 
   @media (max-width: 640px) {
+    main { padding: 32px 12px 60px; }
     .form-row { grid-template-columns: 1fr; }
     .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .filter-row { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+    .filter-row { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
     .filter-btn { white-space: nowrap; flex-shrink: 0; }
+    .sessions-grid { grid-template-columns: 1fr; gap: 16px; }
+    .session-card { width: 100%; max-width: 100%; }
+    .card-top, .card-body, .card-footer { padding-left: 16px; padding-right: 16px; }
     .modal { border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; max-width: 100%; max-height: 92vh; margin: 0; }
     .modal-overlay { align-items: flex-end; padding: 0; }
     .card-footer { flex-wrap: wrap; }
